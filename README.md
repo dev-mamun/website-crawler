@@ -1,6 +1,7 @@
 # FDIC Website Crawler
 
-This service crawls the FDIC website starting from the specified URL, saves HTML pages as PDFs, and downloads existing PDFs.
+This service crawls the FDIC website starting from the specified URL, saves HTML pages as PDFs, and downloads existing
+PDFs.
 
 ## Features
 
@@ -13,12 +14,17 @@ This service crawls the FDIC website starting from the specified URL, saves HTML
 ## Setup
 
 1. **Prerequisites**:
-   - Python 3.9+
-   - Node.js (for Playwright)
-   - pipenv
+    - Python 3.9+
+    - Node.js (for Playwright)
+    - pipenv
 
 2. **Install dependencies**:
    ```bash
    pipenv install
    pipenv run playwright install
    pipenv run playwright install-deps
+
+3. **Run Application**:
+   ```bash   
+   pipenv shell
+   uvicorn app.main:app --reload
