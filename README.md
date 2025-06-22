@@ -11,6 +11,39 @@ PDFs.
 - Scheduled crawling (default: every 12 hours)
 - API endpoints for monitoring and manual triggering
 
+## Project Structure
+      website-crawler/
+      ├── app/ # Application source code
+      │ ├── init.py # Python package marker
+      │ ├── main.py # FastAPI application setup
+      │ ├── config.py # Configuration settings
+      │ ├── crawler/ # Crawler module
+      │ │ ├── init.py
+      │ │ ├── crawler.py # Main crawling logic
+      │ │ ├── pdf_generator.py # PDF generation with Playwright
+      │ │ └── scheduler.py # APScheduler setup
+      │ ├── models/ # Database models
+      │ │ ├── init.py
+      │ │ └── crawl_job.py # Job tracking model
+      │ ├── storage/ # Storage handling
+      │ │ ├── init.py
+      │ │ └── file_storage.py # File operations
+      │ └── utils/ # Utility functions
+      │ ├── init.py
+      │ ├── logger.py # Logging configuration
+      │ └── helpers.py # Helper functions
+      ├── tests/ # Test files
+      │ ├── init.py
+      │ └── test_crawler.py
+      ├── storage/ # PDF storage (auto-created)
+      │ ├── html_pdfs/ # HTML-to-PDF conversions
+      │ └── downloaded_pdfs/ # Direct PDF downloads
+      ├── Pipfile # Pipenv dependencies
+      ├── Pipfile.lock
+      ├── README.md # This documentation
+      ├── .env # Environment variables
+      └── .gitignore # Git ignore rules
+
 ## Setup
 
 1. **Prerequisites**:
