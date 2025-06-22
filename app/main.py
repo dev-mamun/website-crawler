@@ -11,6 +11,8 @@ from app.config import settings
 from app.utils.logger import logger
 from app.crawler.scheduler import CrawlerScheduler
 from app.storage.file_storage import FileStorage
+from fastapi import Request
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="FDIC Website Crawler", version="1.0.0")
 
@@ -26,6 +28,8 @@ app.add_middleware(
 # Initialize scheduler
 scheduler = CrawlerScheduler()
 file_storage = FileStorage()
+
+app.mount("/static", StaticFiles(directory="storage"), name="static")
 
 
 @app.on_event("startup")
@@ -50,13 +54,13 @@ async def root():
 
 
 @app.get("/pdfs")
-async def list_pdfs():
-    """List all stored PDFs"""
+async def list_pdfs(request: Request):
+    """List all stored PDFs with downloadable URLs"""
     try:
-        pdfs = file_storage.list_pdfs()
+        pdfs = file_storage.list_pdfs(request)
         return {
             "count": len(pdfs),
-            "pdfs": [str(pdf.name) for pdf in pdfs]
+            "pdfs": pdfs
         }
     except Exception as e:
         logger.error(f"Error listing PDFs: {str(e)}")

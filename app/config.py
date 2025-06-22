@@ -37,6 +37,9 @@ class Settings:
 
     # Make BASE_DIR available as a setting
     BASE_DIR = BASE_DIR
+    # Add static files configuration
+    STATIC_URL = "/static"
+    STATIC_ROOT = BASE_DIR / "storage"
 
 
 settings = Settings()
