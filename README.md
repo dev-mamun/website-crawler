@@ -77,7 +77,21 @@ PDFs.
    pipenv run playwright install
    pipenv run playwright install-deps
 
-3. **Run Application**:
-   ```bash   
+3. **Configuration**:
+    - SCHEDULE_INTERVAL=12 # hours between crawls
+
+4. **Run the application**:
+   ```bash
    pipenv shell
-   uvicorn app.main:app --reload
+   pipenv run uvicorn app.main:app --reload
+
+5. **Access the API**:
+    - http://localhost:8000/docs (Swagger UI)
+   
+6. **API Endpoints**:
+
+       GET /: Service status
+       GET /pdfs: List all stored PDFs
+       GET /stats: Get crawler statistics
+       POST /run-crawler: Trigger crawler manually
+   
