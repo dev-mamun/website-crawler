@@ -40,6 +40,7 @@ class Settings:
     # Add static files configuration
     STATIC_URL = "/static"
     STATIC_ROOT = BASE_DIR / "storage"
+    CRAWL_DELAY = float(os.getenv("CRAWL_DELAY", 0.1))  # 500 milliseconds delay
 
 
 settings = Settings()
