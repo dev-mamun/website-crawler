@@ -1,11 +1,11 @@
 # Website Crawler
 
-This service crawls provided website starting from the specified URL, saves HTML pages as PDFs, and downloads existing
+This service crawls the FDIC website starting from the specified URL, saves HTML pages as PDFs, and downloads existing
 PDFs.
 
 ## Features
 
-- Recursive crawling of the website
+- Recursive crawling of the FDIC website
 - HTML pages saved as PDF with preserved formatting
 - PDF downloads with standardized naming
 - Scheduled crawling (default: every 12 hours)
