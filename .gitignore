@@ -88,6 +88,7 @@ Thumbs.db
 /storage/
 !/storage/.gitkeep
 /logs/
+!/logs/.gitkeep
 *.log
 *.pdf
 
