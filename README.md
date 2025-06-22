@@ -78,7 +78,13 @@ PDFs.
    pipenv run playwright install-deps
 
 3. **Configuration**:
-    - SCHEDULE_INTERVAL=12 # hours between crawls
+    - Create the `.env` file
+        - SCHEDULE_INTERVAL=12 # hours between crawls
+        - CRAWL_DEPTH=3
+        - MAX_PAGES=50
+        - HTML_PDF_DIR=storage/html_pdfs
+        - DOWNLOADED_PDF_DIR=storage/downloaded_pdfs
+        - BASE_URL=https://www.fdic.gov/risk-management-manual-examination-policies # URL to crawl
 
 4. **Run the application**:
    ```bash
@@ -87,7 +93,7 @@ PDFs.
 
 5. **Access the API**:
     - http://localhost:8000/docs (Swagger UI)
-   
+
 6. **API Endpoints**:
 
        GET /: Service status
