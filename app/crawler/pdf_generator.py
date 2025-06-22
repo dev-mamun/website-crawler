@@ -7,6 +7,7 @@ File: pdf_generator.py
 """
 
 import asyncio
+import re
 from pathlib import Path
 from datetime import datetime
 from playwright.async_api import async_playwright
@@ -47,14 +48,19 @@ class PDFGenerator:
 
     @staticmethod
     def get_pdf_filename(url: str) -> str:
-        """Generate standardized PDF filename from URL"""
-        # Remove protocol and split URL
-        clean_url = url.replace("https://", "").replace("http://", "")
-        domain = clean_url.split("/")[0]
-        path = "_".join(clean_url.split("/")[1:]) or "index"
+        """Generate standardized PDF filename from URL in format domain_path_timestamp.pdf"""
+        # Remove protocol and www.
+        clean_url = re.sub(r"^https?://(www\.)?", "", url)
 
-        # Sanitize filename
-        path = "".join(c if c.isalnum() or c in ('-', '_') else '_' for c in path)
+        # Extract full domain (e.g., "fdic.gov")
+        domain = clean_url.split("/")[0]  # Takes "fdic.gov"
+
+        # Extract path and replace slashes/special chars with underscores
+        path_segments = clean_url.split("/")[1:] or ["index"]  # Fallback to "index" if no path
+        path = "_".join(segment for segment in path_segments if segment)  # Skip empty segments
+
+        # Sanitize path (keep alphanumeric, hyphens, underscores)
+        path = re.sub(r"[^\w-]", "_", path)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         return f"{domain}_{path}_{timestamp}.pdf"

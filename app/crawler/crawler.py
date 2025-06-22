@@ -7,14 +7,14 @@ File: crawler.py
 """
 
 import asyncio
-from urllib.parse import urljoin, urlparse
-from pathlib import Path
-from bs4 import BeautifulSoup
 import httpx
+from urllib.parse import urljoin, urlparse
+from bs4 import BeautifulSoup
 from app.config import settings
 from app.utils.logger import logger
 from app.crawler.pdf_generator import PDFGenerator
 from app.storage.file_storage import FileStorage
+from time import perf_counter
 
 
 class FDICCrawler:
@@ -22,7 +22,8 @@ class FDICCrawler:
         self.visited_urls = set()
         self.file_storage = FileStorage()
         self.pdf_generator = PDFGenerator()
-        self.client = httpx.AsyncClient(follow_redirects=True, timeout=30.0)
+        self.client = httpx.AsyncClient(follow_redirects=True, timeout=60.0)
+        self.last_request_time = 0
 
     async def crawl(self, url: str, depth: int = 0):
         """Recursively crawl the website starting from the given URL"""
@@ -31,6 +32,9 @@ class FDICCrawler:
 
         if url in self.visited_urls:
             return
+
+        # Enforce delay between requests
+        await self._enforce_delay()
 
         self.visited_urls.add(url)
         logger.info(f"Crawling {url} (depth {depth})")
@@ -58,6 +62,15 @@ class FDICCrawler:
         except Exception as e:
             logger.error(f"Error crawling {url}: {str(e)}")
 
+    async def _enforce_delay(self):
+        """Enforce delay between requests to be polite to the server"""
+        elapsed = perf_counter() - self.last_request_time
+        if elapsed < settings.CRAWL_DELAY:
+            wait_time = settings.CRAWL_DELAY - elapsed
+            logger.debug(f"Waiting {wait_time:.2f} seconds before next request")
+            await asyncio.sleep(wait_time)
+        self.last_request_time = perf_counter()
+
     async def process_links(self, soup: BeautifulSoup, base_url: str, depth: int):
         """Process all links found on the page"""
         tasks = []
@@ -78,12 +91,17 @@ class FDICCrawler:
             # Schedule crawling for the next depth
             tasks.append(self.crawl(absolute_url, depth + 1))
 
-        # Run tasks concurrently
-        await asyncio.gather(*tasks)
+        # Run tasks concurrently but with rate limiting
+        for task in tasks:
+            await task
+            await asyncio.sleep(settings.CRAWL_DELAY)
 
     async def download_pdf(self, url: str):
         """Download a PDF file directly"""
         try:
+            # Enforce delay before PDF download
+            await self._enforce_delay()
+
             pdf_filename = self.pdf_generator.get_pdf_filename(url)
             pdf_path = settings.DOWNLOADED_PDF_DIR / pdf_filename
 
