@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: fdic-crawler
+    runtime: python
+    buildCommand: pipenv install
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: SCHEDULE_INTERVAL
+        value: 12
