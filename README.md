@@ -12,6 +12,7 @@ PDFs.
 - API endpoints for monitoring and manual triggering
 
 ## Project Structure
+
       website-crawler/
       ├── app/ # Application source code
       │ ├── init.py # Python package marker
@@ -43,6 +44,25 @@ PDFs.
       ├── README.md # This documentation
       ├── .env # Environment variables
       └── .gitignore # Git ignore rules
+
+### Key Directories Explained:
+
+1. **app/** - Core application logic:
+    - 🐍`main.py`: FastAPI application entry point
+    - 🐍`config.py`: Centralized configuration
+    - 📁`crawler/`: Website crawling and PDF generation
+    - 📁`models/`: Database models (if using DB)
+    - 📁`storage/`: File handling operations
+    - 📁`utils/`: Common utilities
+
+2. **📁 storage/** - Auto-created directories:
+    - 📁`html_pdfs/`: Stores converted HTML pages as PDFs
+    - 📁`downloaded_pdfs/`: Stores directly downloaded PDFs
+
+3. **Root Files**:
+    - `Pipfile`: Python dependency management
+    - `.env`: Environment configuration
+    - `.gitignore`: Version control exclusions
 
 ## Setup
 
