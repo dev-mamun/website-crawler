@@ -87,7 +87,6 @@ Thumbs.db
 # Project specific ignores
 
 !/storage/.gitkeep
-/logs/
 !/logs/.gitkeep
 *.log
 *.pdf
