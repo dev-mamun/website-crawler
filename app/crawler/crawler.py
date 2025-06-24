@@ -53,7 +53,7 @@ class FDICCrawler:
                 # Save HTML as PDF
                 pdf_filename = self.pdf_generator.get_pdf_filename(url)
                 pdf_path = settings.HTML_PDF_DIR / pdf_filename
-                await self.pdf_generator.generate_pdf_from_url(url, pdf_path)
+                await self.pdf_generator.generate_pdf_from_url(url)
 
                 # Extract links for further crawling
                 soup = BeautifulSoup(response.text, 'html.parser')
