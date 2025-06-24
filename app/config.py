@@ -44,6 +44,11 @@ class Settings:
     STORAGE_PATH = str(os.getenv("STORAGE_PATH", "./storage"))
     DEBUG = bool(os.getenv("DEBUG", False))
     SCHEDULED = bool(os.getenv("SCHEDULED", False))
+    # Timeout settings (in milliseconds)
+    DEFAULT_TIMEOUT = int(os.getenv("DEFAULT_TIMEOUT", 60000))  # 1 minute
+    BROWSER_LAUNCH_TIMEOUT = int(os.getenv("BROWSER_LAUNCH_TIMEOUT", 120000))  # 2 minutes
+    NAVIGATION_TIMEOUT = int(os.getenv("NAVIGATION_TIMEOUT", 60000))  # 1 minute
+    PDF_GENERATION_TIMEOUT = int(os.getenv("PDF_GENERATION_TIMEOUT", 60000))  # 1 minute
 
 
 settings = Settings()

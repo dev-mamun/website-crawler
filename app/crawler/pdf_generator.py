@@ -17,34 +17,94 @@ from app.utils.logger import logger
 
 class PDFGenerator:
     @staticmethod
-    async def generate_pdf_from_url(url: str, output_path: Path):
-        """Generate PDF from URL using Playwright"""
-        try:
-            async with async_playwright() as p:
-                browser = await p.chromium.launch(headless=settings.HEADLESS)
-                context = await browser.new_context(user_agent=settings.USER_AGENT)
-                page = await context.new_page()
+    # async def generate_pdf_from_url(url: str, output_path: Path):
+    #     """Generate PDF from URL using Playwright"""
+    #     try:
+    #         async with async_playwright() as p:
+    #             browser = await p.chromium.launch(headless=settings.HEADLESS)
+    #             context = await browser.new_context(user_agent=settings.USER_AGENT)
+    #             page = await context.new_page()
+    #
+    #             await page.goto(url, wait_until="networkidle")
+    #
+    #             # Wait for potential JavaScript rendering
+    #             await asyncio.sleep(3)
+    #
+    #             await page.emulate_media(media="screen")
+    #             await page.pdf(
+    #                 path=str(output_path),
+    #                 format="A4",
+    #                 print_background=True,
+    #                 margin={"top": "20mm", "right": "20mm", "bottom": "20mm", "left": "20mm"}
+    #             )
+    #
+    #             await browser.close()
+    #
+    #         logger.info(f"Successfully generated PDF from {url} to {output_path}")
+    #         return True
+    #     except Exception as e:
+    #         logger.error(f"Error generating PDF from {url}: {str(e)}")
+    #         return False
+    class PDFGenerator:
+        @staticmethod
+        async def generate_pdf_from_url(url: str):
+            """Generate PDF from URL with increased timeout and retries"""
+            try:
+                pdf_filename = PDFGenerator.get_pdf_filename(url)
+                pdf_path = settings.HTML_PDF_DIR / pdf_filename
 
-                await page.goto(url, wait_until="networkidle")
+                async with async_playwright() as p:
+                    # Launch browser with additional timeout options
+                    browser = await p.chromium.launch(
+                        headless=settings.HEADLESS,
+                        timeout=settings.BROWSER_LAUNCH_TIMEOUT  # 2 minutes for browser launch
+                    )
+                    context = await browser.new_context(
+                        user_agent=settings.USER_AGENT,
+                        viewport={'width': 1280, 'height': 720}
+                    )
 
-                # Wait for potential JavaScript rendering
-                await asyncio.sleep(2)
+                    page = await context.new_page()
 
-                await page.emulate_media(media="screen")
-                await page.pdf(
-                    path=str(output_path),
-                    format="A4",
-                    print_background=True,
-                    margin={"top": "20mm", "right": "20mm", "bottom": "20mm", "left": "20mm"}
-                )
+                    # Set default navigation timeout (60 seconds)
+                    page.set_default_navigation_timeout(settings.NAVIGATION_TIMEOUT)
+                    page.set_default_timeout(settings.DEFAULT_TIMEOUT)
 
-                await browser.close()
+                    try:
+                        # Load page with extended timeout and wait conditions
+                        await page.goto(
+                            url,
+                            timeout=settings.DEFAULT_TIMEOUT,
+                            wait_until="domcontentloaded"  # Less strict than "networkidle"
+                        )
 
-            logger.info(f"Successfully generated PDF from {url} to {output_path}")
-            return True
-        except Exception as e:
-            logger.error(f"Error generating PDF from {url}: {str(e)}")
-            return False
+                        # Wait for important elements or additional time
+                        await page.wait_for_load_state("networkidle", timeout=30000)
+                        await asyncio.sleep(3)  # Extra buffer time
+
+                        # Generate PDF
+                        await page.emulate_media(media="screen")
+                        await page.pdf(
+                            path=str(pdf_path),
+                            format="A4",
+                            print_background=True,
+                            margin={"top": "20mm", "right": "20mm", "bottom": "20mm", "left": "20mm"},
+                            timeout=settings.PDF_GENERATION_TIMEOUT
+                        )
+
+                        logger.info(f"Successfully generated PDF: {pdf_path}")
+                        return pdf_path
+
+                    except Exception as e:
+                        logger.error(f"Error during page processing for {url}: {str(e)}")
+                        return None
+
+                    finally:
+                        await browser.close()
+
+            except Exception as e:
+                logger.error(f"Browser setup failed for {url}: {str(e)}")
+                return None
 
     @staticmethod
     def get_pdf_filename(url: str) -> str:
