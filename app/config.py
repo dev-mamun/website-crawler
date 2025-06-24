@@ -41,6 +41,9 @@ class Settings:
     STATIC_URL = "/static"
     STATIC_ROOT = BASE_DIR / "storage"
     CRAWL_DELAY = float(os.getenv("CRAWL_DELAY", 0.1))  # 500 milliseconds delay
+    STORAGE_PATH = str(os.getenv("STORAGE_PATH", "./storage"))
+    DEBUG = bool(os.getenv("DEBUG", False))
+    SCHEDULED = bool(os.getenv("SCHEDULED", False))
 
 
 settings = Settings()
