@@ -29,19 +29,22 @@ app.add_middleware(
 scheduler = CrawlerScheduler()
 file_storage = FileStorage()
 
-app.mount("/static", StaticFiles(directory="storage"), name="static")
+# app.mount("/static", StaticFiles(directory="storage"), name="static")
+app.mount("/static", StaticFiles(directory=settings.STORAGE_PATH), name="static")
 
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Starting up FDIC Crawler application")
-    scheduler.start()
+    if settings.SCHEDULED:
+        logger.info("Starting up FDIC Crawler application")
+        scheduler.start()
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    logger.info("Shutting down FDIC Crawler application")
-    scheduler.shutdown()
+    if settings.SCHEDULED:
+        logger.info("Shutting down FDIC Crawler application")
+        scheduler.shutdown()
 
 
 @app.get("/")
