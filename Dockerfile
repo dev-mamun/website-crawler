@@ -1,5 +1,5 @@
 # Use official Python image
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Install system dependencies for Playwright and other requirements
 RUN apt-get update && \
